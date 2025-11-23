@@ -12,6 +12,9 @@ A simple and clean Playwright-based API testing framework.
 ## 📁 Project Structure
 
 ```
+├── .github/
+│   └── workflows/
+│       └── api-tests.yml           # GitHub Actions workflow
 ├── lib/
 │   ├── api/
 │   │   └── request-wrapper.ts      # HTTP request wrapper
@@ -20,6 +23,7 @@ A simple and clean Playwright-based API testing framework.
 ├── tests/
 │   └── api/
 │       └── users.spec.ts           # API tests for users endpoint
+├── .env.example                    # Environment template
 ├── playwright.config.ts            # Playwright configuration
 └── package.json                    # Dependencies and scripts
 ```
@@ -34,16 +38,25 @@ A simple and clean Playwright-based API testing framework.
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/tarunramireddy/API.git
 cd API
 
 # Install dependencies
 npm install
 
-# Set up environment (optional)
+# Set up environment
 cp .env.example .env
-# Edit .env with your API configuration
+# Edit .env with your actual API configuration
 ```
+
+### Local Development
+1. Copy `.env.example` to `.env`
+2. Update the values in `.env`:
+   ```env
+   BASE_URL=https://reqres.in
+   API_KEY=reqres-free-v1
+   ```
+3. Run tests: `npm test`
 
 ## 🧪 Running Tests
 
@@ -93,6 +106,51 @@ npm run report
 BASE_URL=https://reqres.in
 API_KEY=your_api_key_here
 ```
+
+## 🚀 GitHub Actions Setup
+
+### Setting up Repository Secrets
+
+To run tests in GitHub Actions, you need to set up repository secrets for your environment variables:
+
+#### Step 1: Navigate to Repository Settings
+1. Go to your repository on GitHub
+2. Click on **Settings** tab
+3. In the left sidebar, click **Secrets and variables** > **Actions**
+
+#### Step 2: Add Repository Secrets
+Click **New repository secret** and add the following secrets:
+
+| Secret Name | Value | Description |
+|------------|--------|-------------|
+| `BASE_URL` | `https://reqres.in` | API base URL |
+| `API_KEY` | `reqres-free-v1` | API authentication key |
+
+#### Step 3: Secret Usage in Workflow
+The GitHub Actions workflow (`.github/workflows/api-tests.yml`) automatically creates the `.env` file using these secrets:
+
+```yaml
+- name: Create .env file
+  run: |
+    echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
+    echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+```
+
+**Note**: No browser installation required since these are API-only tests using Playwright's request context.
+
+### Security Best Practices
+
+- ✅ **Never commit `.env` files** - Already in `.gitignore`
+- ✅ **Use GitHub Secrets** for sensitive data
+- ✅ **Rotate API keys** regularly
+- ✅ **Use different keys** for different environments (dev/staging/prod)
+
+### Testing the Workflow
+
+After setting up secrets:
+1. Push changes to trigger the workflow
+2. Check the **Actions** tab to see test results
+3. Download test artifacts if needed
 
 ## 📚 API Documentation
 
